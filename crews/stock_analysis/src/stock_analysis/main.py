@@ -3,30 +3,26 @@ from crew import StockAnalysisCrew
 
 def run():
     inputs = {
-        'query': 'What is the company you want to analyze?',
-        'company_stock': 'AMZN',
+        'query': '请对该股票进行全面的投资分析',
+        'company_stock': '688653',
     }
     return StockAnalysisCrew().crew().kickoff(inputs=inputs)
 
 def train():
-    """
-    Train the crew for a given number of iterations.
-    """
     inputs = {
-        'query': 'What is last years revenue',
-        'company_stock': 'AMZN',
+        'query': '分析该股票去年的营收情况',
+        'company_stock': '688653',
     }
     try:
         StockAnalysisCrew().crew().train(n_iterations=int(sys.argv[1]), inputs=inputs)
-
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
-    
+
 if __name__ == "__main__":
-    print("## Welcome to Stock Analysis Crew")
+    print("## 欢迎使用A股分析系统")
     print('-------------------------------')
     result = run()
     print("\n\n########################")
-    print("## Here is the Report")
+    print("## 分析报告")
     print("########################\n")
     print(result)

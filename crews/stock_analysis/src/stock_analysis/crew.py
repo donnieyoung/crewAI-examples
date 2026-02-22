@@ -2,9 +2,9 @@ from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 
 from tools.calculator_tool import CalculatorTool
-from tools.sec_tools import SEC10KTool, SEC10QTool
+from tools.akshare_tools import StockFinancialTool, StockNewsTool, StockInfoTool
 
-from crewai_tools import WebsiteSearchTool, ScrapeWebsiteTool
+from crewai_tools import ScrapeWebsiteTool
 
 import os
 from dotenv import load_dotenv
@@ -28,20 +28,18 @@ class StockAnalysisCrew:
             verbose=True,
             llm=llm,
             tools=[
+                StockNewsTool(),
                 ScrapeWebsiteTool(),
-                # WebsiteSearchTool(), 
-                SEC10QTool("AMZN"),
-                SEC10KTool("AMZN"),
             ]
         )
-    
+
     @task
     def research(self) -> Task:
         return Task(
             config=self.tasks_config['research'],
             agent=self.research_analyst_agent(),
         )
-    
+
     @agent
     def financial_analyst_agent(self) -> Agent:
         return Agent(
@@ -49,21 +47,19 @@ class StockAnalysisCrew:
             verbose=True,
             llm=llm,
             tools=[
-                ScrapeWebsiteTool(),
-                WebsiteSearchTool(),
+                StockFinancialTool(),
+                StockInfoTool(),
                 CalculatorTool(),
-                SEC10QTool("AMZN"),
-                SEC10KTool("AMZN"),
             ]
         )
-    
+
     @task
-    def financial_analysis(self) -> Task: 
+    def financial_analysis(self) -> Task:
         return Task(
             config=self.tasks_config['financial_analysis'],
             agent=self.financial_analyst_agent(),
         )
-    
+
     @task
     def filings_analysis(self) -> Task:
         return Task(
@@ -78,8 +74,7 @@ class StockAnalysisCrew:
             verbose=True,
             llm=llm,
             tools=[
-                ScrapeWebsiteTool(),
-                WebsiteSearchTool(),
+                StockInfoTool(),
                 CalculatorTool(),
             ]
         )
@@ -90,14 +85,12 @@ class StockAnalysisCrew:
             config=self.tasks_config['recommend'],
             agent=self.investment_advisor_agent(),
         )
-    
-    
+
     @crew
     def crew(self) -> Crew:
-        """Creates the Stock Analysis"""
         return Crew(
-            agents=self.agents,  
-            tasks=self.tasks, 
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
         )
